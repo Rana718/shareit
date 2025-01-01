@@ -22,6 +22,21 @@ DerivedData
 *.xcuserstate
 **/.xcode.env.local
 
+
+# Android build artifacts
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.idea/
+
+# iOS build artifacts
+ios/Pods/
+ios/build/
+ios/*.xcworkspace
+ios/DerivedData/
+ios/.idea/
+
 # Android/IntelliJ
 #
 build/
