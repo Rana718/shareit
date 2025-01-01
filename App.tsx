@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import './global.css';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -76,8 +77,8 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> Hi Diya
+          <Section title="Step One" >
+            <Text className='text-pink-600 font-bold italic'>Hi Diya maybe i love you </Text>
           </Section>
           <Section title="See Your Changes">
             <ReloadInstructions />
