@@ -4,6 +4,7 @@ import { Colors, screenHeight, screenWidth } from "../utils/Constants";
 export const homeHeaderStyles = StyleSheet.create({
     mainContainer: {
         backgroundColor: Colors.primary,
+        paddingTop:24,
     },
     container: {
         padding: 10,
