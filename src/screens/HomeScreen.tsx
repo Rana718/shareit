@@ -17,6 +17,8 @@ export default function HomeScreen() {
                 <Options/>
                 <Misc/>
             </ScrollView>
+
+            
         </View>
     )
 }
