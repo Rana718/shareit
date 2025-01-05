@@ -24,7 +24,7 @@ export default function AbsoluteQRBottom() {
                 </TouchableOpacity>
             </View>
 
-            {isVisible && <QRScannerModel/>}
+            {isVisible && <QRScannerModel visible={isVisible} onClose={()=>setIsVisible(false)}/>}
         </>
     )
 }
