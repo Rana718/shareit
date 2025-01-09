@@ -4,18 +4,35 @@ import { optionStyles } from '../../styles/optionsStyles';
 import Icons from '../global/Icons';
 import { Colors } from '../../utils/Constants';
 import CustomText from '../global/CustomText';
+import { useTCP } from '../../services/TCPProvider';
+import { navigate } from '../../utils/NavigationUtil';
+import { pickDocument, pickImage } from '../../utils/librayHelpers';
 
 
 interface OptionsProps {
     isHome?: boolean;
-    onMediaPress?: (media: any) => void;
+    onMediaPickUp?: (media: any) => void;
     onFilePickeUp?: (file: any) => void;
 }
 
-export default function Options({isHome, onMediaPress, onFilePickeUp}: OptionsProps) {
+export default function Options({isHome, onMediaPickUp, onFilePickeUp}: OptionsProps) {
+    const { isConnected } = useTCP();
 
     const handleUniversePicker = async (type: string) => {
-
+        if(isHome){
+            if(isConnected){
+                navigate("ConnectionScreen")
+            }else{
+                navigate("HomeScreen")
+            }
+            return
+        }
+        if(type === 'image' && onMediaPickUp){
+            pickImage(onMediaPickUp)
+        }
+        if(type === 'file' && onFilePickeUp){
+            pickDocument(onFilePickeUp)
+        }
     }
 
 
