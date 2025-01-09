@@ -6,6 +6,8 @@ import Icons from '../global/Icons';
 import { Camera, CodeScanner, useCameraDevice } from 'react-native-vision-camera';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
+import { useTCP } from '../../services/TCPProvider';
+import { navigate } from '../../utils/NavigationUtil';
 
 
 interface QRScannerModelProps {
@@ -14,7 +16,7 @@ interface QRScannerModelProps {
 }
 
 export default function QRScannerModel({ visible, onClose }: QRScannerModelProps) {
-
+    const { connectToServer, isConnected } = useTCP();
     const [loading, setLoading] = useState(true)
     const [codeFound, setCodeFound] = useState(false)
     const [hasPermission, setHasPermission] = useState(false)
@@ -46,11 +48,22 @@ export default function QRScannerModel({ visible, onClose }: QRScannerModelProps
         )
     }, [shimmerTranslatex])
 
+    useEffect(()=>{
+        if(isConnected){
+            onClose()
+            navigate('ConnectionScreen')
+        }
+    },[isConnected])
+
 
     const handelScan = (data: any) => {
         const [connectionData, deviceName] = data.replace('tcp://', '').split('|');
         const [host, port] = connectionData?.split(':');
         console.log(host, port, deviceName)
+
+        // Connect to the server
+        connectToServer(host, parseInt(port, 10), deviceName)
+
     }
 
     const codeScanner = useMemo<CodeScanner>(()=>({

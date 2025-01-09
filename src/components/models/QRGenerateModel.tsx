@@ -8,6 +8,9 @@ import Animated, { Easing, useSharedValue, useAnimatedStyle, withRepeat, withTim
 import DeviceInfo from 'react-native-device-info';
 import QRCode from 'react-native-qrcode-svg';
 import { multiColor } from '../../utils/Constants';
+import { getLocalIPAddress } from '../../utils/networkUtils';
+import { useTCP } from '../../services/TCPProvider';
+import { navigate } from '../../utils/NavigationUtil';
 
 
 interface QRScannerModelProps {
@@ -16,7 +19,7 @@ interface QRScannerModelProps {
 }
 
 export default function QRSGenerateModel({ visible, onClose }: QRScannerModelProps) {
-
+    const { isConnected, startServer, server } = useTCP();
     const [loading, setLoading] = useState(true)
     const [qrValue, setQRValue] = useState('')
     const shimmerTranslatex = useSharedValue(-300)
@@ -27,7 +30,18 @@ export default function QRSGenerateModel({ visible, onClose }: QRScannerModelPro
 
     const setupServer = async () =>{
         const deviceName = await DeviceInfo.getDeviceName();
-        setQRValue('I Love You Diya💕💕')
+        const ip = await getLocalIPAddress();
+        const port = 4000;
+
+        if(server){
+            setQRValue(`tcp://${ip}:${port}|${deviceName}`)
+            setLoading(false)
+            return
+        }
+
+        startServer(port)
+        setQRValue(`tcp://${ip}:${port}|${deviceName}`)
+        console.log('Server Info:', `tcp://${ip}:${port}|${deviceName}`)
         setLoading(false);
     }
 
@@ -44,6 +58,14 @@ export default function QRSGenerateModel({ visible, onClose }: QRScannerModelPro
         }
 
     }, [visible])
+
+    useEffect(()=>{
+        console.log('TCPProvider: isConnected:', isConnected);
+        if(isConnected){
+            onClose()
+            navigate('ConnectionScreen')
+        }
+    })
 
 
     return (
