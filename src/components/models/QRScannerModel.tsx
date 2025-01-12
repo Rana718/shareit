@@ -59,10 +59,12 @@ export default function QRScannerModel({ visible, onClose }: QRScannerModelProps
     const handelScan = (data: any) => {
         const [connectionData, deviceName] = data.replace('tcp://', '').split('|');
         const [host, port] = connectionData?.split(':');
-        console.log(host, port, deviceName)
+        console.log(data)
 
         // Connect to the server
-        connectToServer(host, parseInt(port, 10), deviceName)
+        connectToServer(host, port, deviceName);
+        console.log(isConnected)
+        
 
     }
 
@@ -70,8 +72,11 @@ export default function QRScannerModel({ visible, onClose }: QRScannerModelProps
         codeTypes: ['qr', 'codabar'],
         onCodeScanned: (codes)=>{
             if(codeFound){
+                console.log('Code already found')
+                console.log(isConnected)
                 return
             }
+            console.log('Scanning code...')
             console.log(`Scanned code: ${codes?.length} codes!`)
             if(codes?.length > 0){
                 const scannedCode = codes[0].value;

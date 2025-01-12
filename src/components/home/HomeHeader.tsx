@@ -15,7 +15,7 @@ export default function HomeHeader() {
         <View style={homeHeaderStyles.mainContainer}>
             <SafeAreaView/>
             <View style={[commonStyles.flexRowBetween, homeHeaderStyles.container]}>
-                <TouchableOpacity>
+                <TouchableOpacity >
                     <Icons iconFamily='Ionicons' name='menu' size={28} color='#fff'/>
                 </TouchableOpacity>
                 <Image 
