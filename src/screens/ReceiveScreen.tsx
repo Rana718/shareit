@@ -9,9 +9,9 @@ import LottieView from 'lottie-react-native';
 import Icons from '../components/global/Icons';
 import BreakerText from '../components/ui/BreakerText';
 import { Colors } from '../utils/Constants';
-import QRScannerModel from '../components/models/QRScannerModel';
 import DeviceInfo from 'react-native-device-info';
 import { getBroadcastIPAddress, getLocalIPAddress } from '../utils/networkUtils';
+import QRSGenerateModel from '../components/models/QRGenerateModel';
 
 
 
@@ -80,9 +80,8 @@ export default function SendScreen() {
                     if(err){
                         console.log('Error sending discovery signal:', err)
                     }else{
-                        console.log('Discovery signal sent to:', targetAddress)
                         console.log("deviceName:", deviceName)
-                    }
+                    } 
                     client.close();
                 })
             }catch(err){
@@ -153,7 +152,7 @@ export default function SendScreen() {
             </TouchableOpacity>
 
             {isScannerVisible && (
-                <QRScannerModel visible={isScannerVisible} onClose={()=>setIsScannerVisible(false)}/>
+                <QRSGenerateModel visible={isScannerVisible} onClose={()=>setIsScannerVisible(false)}/>
             )}
         </LinearGradient>
     )

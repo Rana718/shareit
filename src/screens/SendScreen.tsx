@@ -93,7 +93,7 @@ export default function SendScreen() {
         let isOverlapping;
 
         do {
-            const angle = Math.random() * 360;
+            const angle = Math.random() * 360; 
             const distance = Math.random() * (radius - 50) + 50;
             const x = distance * Math.cos((angle + Math.PI) / 180);
             const y = distance * Math.sin((angle + Math.PI) / 180);
