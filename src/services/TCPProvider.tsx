@@ -38,7 +38,7 @@ export const useTCP = (): TCPContextType => {
 }
 
 const options = {
-    keystore: require('../../cert/server-keystore.p12')
+    keystore: require('../../cert/certificate.p12')
 }
 
 export const TCPProvider: FC <{children:React.ReactNode}> = ({children}) => {
@@ -116,55 +116,60 @@ export const TCPProvider: FC <{children:React.ReactNode}> = ({children}) => {
 
     // Connect to server
     const connectToServer = useCallback((host: string, port: number, deviceName: string)=>{
-        const newClient = TcpSocket.connectTLS({
-            host,
-            port,
-            cert: true,
-            ca: require('../../cert/server-cert.pem'),
-        },
-            () => {
-                setIsConnected(true);
-                setConnectedDevice(deviceName);
-                const myDeviceName = DeviceInfo.getDeviceNameSync();
-                newClient.write(JSON.stringify({ event: 'connect', deviceName: myDeviceName }));
-            }
+
+        try{
+            const newClient = TcpSocket.connectTLS({
+                host,
+                port,
+                cert: true,
+                ca: require('../../cert/certificate.pem'),
+            },
+                () => {
+                    setIsConnected(true);
+                    setConnectedDevice(deviceName);
+                    const myDeviceName = DeviceInfo.getDeviceNameSync();
+                    newClient.write(JSON.stringify({ event: 'connect', deviceName: myDeviceName }));
+                }
+        
+            )
     
-        )
-
-        newClient.setNoDelay(true);
-        newClient.readableHighWaterMark = 1024 * 1024 * 1;
-        newClient.writableHighWaterMark = 1024 * 1024 * 1;
-
-        newClient.on('data', async(data) => {
-            const parsedData = JSON.parse(data?.toString());
-
-            if(parsedData?.event === 'file_ack'){
-                receiveFileAck(parsedData?.file, newClient, setReceivedFiles);
-            }
-
-            if(parsedData?.event === 'send_chunk_ack'){
-                sendChunkAck(parsedData?.chunkno, newClient, setTotalReceivedBytes, setSentFiles);
-            }
-
-            if(parsedData?.event === 'receive_chunk_ack'){
-                receiveChunkAck(parsedData?.chunk, parsedData?.chunkNo, newClient, setTotalReceivedBytes, genrateFile);
-            }
-        })
-
-        newClient.on('close', () => {
-            console.log('Disconnected from server');
-            disconnect();
-            setReceivedFiles([]);
-            setSentFiles([]);
-            setCurrentChunkset(null);
-            setTotalReceivedBytes(0);
-            setChunkStore(null);
-            setIsConnected(false);
-        });
-
-        newClient.on('error', (error) => console.log('Error', error));
-
-        setClient(newClient);
+            newClient.setNoDelay(true);
+            newClient.readableHighWaterMark = 1024 * 1024 * 1;
+            newClient.writableHighWaterMark = 1024 * 1024 * 1;
+    
+            newClient.on('data', async(data) => {
+                const parsedData = JSON.parse(data?.toString());
+    
+                if(parsedData?.event === 'file_ack'){
+                    receiveFileAck(parsedData?.file, newClient, setReceivedFiles);
+                }
+    
+                if(parsedData?.event === 'send_chunk_ack'){
+                    sendChunkAck(parsedData?.chunkno, newClient, setTotalReceivedBytes, setSentFiles);
+                }
+    
+                if(parsedData?.event === 'receive_chunk_ack'){
+                    receiveChunkAck(parsedData?.chunk, parsedData?.chunkNo, newClient, setTotalReceivedBytes, genrateFile);
+                }
+            })
+    
+            newClient.on('close', () => {
+                console.log('Disconnected from server');
+                disconnect();
+                setReceivedFiles([]);
+                setSentFiles([]);
+                setCurrentChunkset(null);
+                setTotalReceivedBytes(0);
+                setChunkStore(null);
+                setIsConnected(false);
+            });
+    
+            newClient.on('error', (error) => console.log('Error', error));
+    
+            setClient(newClient);
+        }catch(error){
+            console.log('Error', error);
+        }
 
     },[client]) 
 
