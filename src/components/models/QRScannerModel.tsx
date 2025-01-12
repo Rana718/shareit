@@ -60,10 +60,11 @@ export default function QRScannerModel({ visible, onClose }: QRScannerModelProps
         const [connectionData, deviceName] = data.replace('tcp://', '').split('|');
         const [host, port] = connectionData?.split(':');
         console.log(data)
+        console.log(`Host: ${host} Port: ${port} Device: ${deviceName}`)
 
         // Connect to the server
         connectToServer(host, port, deviceName);
-        console.log(isConnected)
+        
         
 
     }

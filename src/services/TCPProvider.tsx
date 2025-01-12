@@ -38,7 +38,7 @@ export const useTCP = (): TCPContextType => {
 }
 
 const options = {
-    keystore: require('../../cert/certificate.p12')
+    keystore: require('../../cert/server-keystore.p12')
 }
 
 export const TCPProvider: FC <{children:React.ReactNode}> = ({children}) => {
@@ -122,9 +122,10 @@ export const TCPProvider: FC <{children:React.ReactNode}> = ({children}) => {
                 host,
                 port,
                 cert: true,
-                ca: require('../../cert/certificate.pem'),
+                ca: require('../../cert/server-cert.pem'),
             },
                 () => {
+                    console.log('Connected to server');
                     setIsConnected(true);
                     setConnectedDevice(deviceName);
                     const myDeviceName = DeviceInfo.getDeviceNameSync();
