@@ -18,7 +18,7 @@ export const homeHeaderStyles = StyleSheet.create({
     },
     logo: {
         width: screenWidth * 0.4,
-        height: screenHeight * 0.048,
+        height: screenHeight * 0.05,
         resizeMode: 'contain',
     },
     profile: {

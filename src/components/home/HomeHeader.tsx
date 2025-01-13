@@ -18,7 +18,7 @@ export default function HomeHeader() {
                 <TouchableOpacity >
                     <Icons iconFamily='Ionicons' name='menu' size={28} color='#fff'/>
                 </TouchableOpacity>
-                <Image 
+                <Image
                     source={require('../../assets/images/logo_t.png')}
                     style={homeHeaderStyles.logo}
                 />
