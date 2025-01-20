@@ -20,6 +20,7 @@ export default function QRScannerModel({ visible, onClose }: QRScannerModelProps
     const [loading, setLoading] = useState(true)
     const [codeFound, setCodeFound] = useState(false)
     const [hasPermission, setHasPermission] = useState(false)
+    const [isConnecting, setIsConnecting] = useState(false);
     const device = useCameraDevice('back') as any
     const shimmerTranslatex = useSharedValue(-300)
 
@@ -56,37 +57,50 @@ export default function QRScannerModel({ visible, onClose }: QRScannerModelProps
     },[isConnected])
 
 
-    const handelScan = (data: any) => {
-        const [connectionData, deviceName] = data.replace('tcp://', '').split('|');
-        const [host, port] = connectionData?.split(':');
-        console.log(data)
-        console.log(`Host: ${host} Port: ${port} Device: ${deviceName}`)
+    const handelScan = async (data: any) => {
+        if (isConnecting) {
+            console.log('Connection already in progress');
+            return;
+        }
 
-        // Connect to the server
-        connectToServer(host, port, deviceName);
-        
-        
+        try {
+            setIsConnecting(true);
+            setCodeFound(true);
+            const [connectionData, deviceName] = data.replace('tcp://', '').split('|');
+            const [host, port] = connectionData?.split(':');
+            console.log(`Attempting connection to - Host: ${host} Port: ${port} Device: ${deviceName}`);
+            
+            await connectToServer(host, parseInt(port), deviceName);
+            
+            // Reset connection state after 5 seconds if not connected
+            setTimeout(() => {
+                if (!isConnected) {
+                    setCodeFound(false);
+                    setIsConnecting(false);
+                }
+            }, 5000);
 
+        } catch (error) {
+            console.error('Error processing QR code:', error);
+            setCodeFound(false);
+            setIsConnecting(false);
+        }
     }
 
-    const codeScanner = useMemo<CodeScanner>(()=>({
+    const codeScanner = useMemo<CodeScanner>(() => ({
         codeTypes: ['qr', 'codabar'],
-        onCodeScanned: (codes)=>{
-            if(codeFound){
-                console.log('Code already found')
-                console.log(isConnected)
-                return
+        onCodeScanned: (codes) => {
+            if (isConnecting) {
+                console.log('Connection in progress');
+                return;
             }
-            console.log('Scanning code...')
-            console.log(`Scanned code: ${codes?.length} codes!`)
-            if(codes?.length > 0){
-                const scannedCode = codes[0].value;
-                console.log(scannedCode);
-                setCodeFound(true)
-                handelScan(scannedCode)
+            
+            if (codes?.length > 0 && codes[0].value) {
+                console.log('Processing scanned code:', codes[0].value);
+                handelScan(codes[0].value);
             }
         }
-    }), [codeFound])
+    }), [isConnecting])
 
     return (
         <Modal
